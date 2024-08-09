@@ -1,0 +1,60 @@
+version: '3.8'
+services:
+    db:
+        image: postgres:14
+        restart: always
+        environment:
+            POSTGRES_USER: Pylypchuk
+            POSTGRES_PASSWORD: 3313
+            POSTGRES_DB: Lab1DB
+        ports:
+            - 5432:5432
+        networks:
+            - lab3
+
+    old_app:
+        build: ./old_app/
+        depends_on:
+            - db
+        volumes:
+            - ./old_app:/usr/src/old_app
+        networks:
+            - lab3
+
+    flyway:
+        image: flyway/flyway:latest
+        command: [ "-configFiles=/flyway/conf/flyway.conf", "migrate" ]
+        volumes: 
+            - ./flyway_conf:/flyway/conf
+            - ./flyway_sql:/flyway/sql
+        depends_on:
+            old_app:
+                condition: service_completed_successfully
+            db:
+                condition: service_started
+        networks:
+            - lab3
+
+    app:
+        build: ./app/
+        depends_on:
+            flyway:
+                condition: service_completed_successfully
+        ports:
+            - 5000:5000
+        volumes:
+            - ./app:/usr/src/app
+        networks:
+            - lab3
+
+    redis:
+        image: redis
+        restart: always
+        depends_on:
+            flyway:
+                condition: service_completed_successfully
+        networks:
+            - lab3
+
+networks:
+    lab3:
