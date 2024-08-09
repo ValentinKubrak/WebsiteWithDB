@@ -1,8 +1,8 @@
-#Інструкція
+#Instruction
 
-Перемістіть файли "Odata2019File.csv" та "Odata2020File.csv" в папку app.
+Move files "Odata2019File.csv" and "Odata2020File.csv" in the folder "app".
 
-Після цього запустіть насупні команди:
+After that run the next code:
 ```
 1. docker-compose build
 2. docker-compose up
